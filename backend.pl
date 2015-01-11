@@ -2,7 +2,7 @@
 
 :- use_module(db,[course/1]).
 
-data(List) :-
+data(Courses) :-
     findall(C, course(C), Courses).
 
 
