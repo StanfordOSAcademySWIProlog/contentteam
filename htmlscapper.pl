@@ -1,4 +1,4 @@
-:- module(content, [grab_content/2,write_to_file/2]).
+:- module(content, [grab_content/2]).
 /**<module> Defines the API for the content team to extract data of
  * classes for the shell. The list of predicates are listed here.
  *
