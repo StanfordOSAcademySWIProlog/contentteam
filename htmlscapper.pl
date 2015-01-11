@@ -10,4 +10,9 @@
 
 
 % Load a static webpage for the time being.
-load_structure('
+run_query(Page) :- load_structure('UCSDCSECourses.html',Page,[]).
+
+% Loads from URL.
+run_online_query(OnlinePage) :-
+	http_open('http://ucsd.edu/catalog/courses/CSE.html', OnlineStream, []),
+	load_structure(OnlineStream, OnlinePage, []).
