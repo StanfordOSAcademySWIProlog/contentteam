@@ -14,7 +14,9 @@
 %%
 url_scapper(URL, Result) :-
 	http_get(URL, DomReply, []),
-	xpath(DomReply, //p(@class='course-name'), Result),
+	findall(P,xpath(DomReply, //p(@class='course-name'), P),Element),
+	select(element(_,_,[Result]), Element, _),
+	%Element=elemet(_,_,Result),
 	true.
 
 grab_content(Query, Result) :-
