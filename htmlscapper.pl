@@ -1,4 +1,4 @@
-:- module(content, [grab_content/2]).
+:- module(content, [url_scrapper/2, write_to_file/2]).
 /**<module> Defines the API for the content team to extract data of
  * classes for the shell. The list of predicates are listed here.
  *
@@ -9,17 +9,19 @@
 :- use_module(library(http/http_sgml_plugin)).
 :- use_module(library(xpath)).
 
+write_to_file(Courses, File) :-
+	setup_call_cleanup(open(File, write, Out),
+	    forall(member(Course, Courses), format(Out, "course(~q)~n", Course)),
+	    close(Out)).
+
 %%	run_online_query(+Contents:html)// is det
 %
-%%
-url_scapper(URL, Result) :-
+%
+url_scrapper(URL, Result) :-
 	http_get(URL, DomReply, []),
-	xpath(DomReply, //p(@class='course-name'), Result),
+	findall(Course, xpath(DomReply, //p(@class='course-name'), Course), HCourse),
+	findall(Course, course_name(HCourse, Course),Result),
 	true.
 
-grab_content(Query, Result) :-
-	Query = "hello", Result="world",
-	format("hello world~n").
-
-
-
+course_name(HtmlCourse, Course) :-
+	select(element(_,_,[Course]), HtmlCourse, _).
