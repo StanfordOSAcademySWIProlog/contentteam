@@ -1,9 +1,9 @@
 % Sample TechTree
 % To be changed later
 
-:- module(tech_tree, []).
+%:- module(tech_tree, []).
 
-:- use_module(library(lists)).
+%:- use_module(library(lists)).
 
 % Simple data: my_course(Name, Pre-req)
 course('3',[]).
@@ -19,12 +19,30 @@ course_taken('12').
 
 
 
-course_list(L) :- findall(X, course(X, Y), L).
-course_taken_list(L) :- findall(X, course_taken(X), L). 
-course_remain_list(L) :- course_list(X), course_taken_list(Y), subtract(X, Y, L). 
+course_list(L) :-
+    findall(X, course(X, _), L).
+
+course_taken_list(L) :-
+    findall(X, course_taken(X), L). 
+
+course_remain_list(L) :-
+    course_list(X),
+    course_taken_list(Y),
+    subtract(X, Y, L). 
   
-no_prereq(X) :- course(X, L), length(L,0).
-is_prereq(X,Y) :- course(Y, L), member(X, L).
+no_prereq(X) :-
+    course(X, []).
+
+is_prereq(X, Y) :-
+    course(Y, L),
+    member(X, L).
 
 % todo 
 % able_to_take(X) :-
+
+:- use_module(library(ugraphs)).
+
+prereq_tree(T) :-
+    course_list(Vertices),
+    findall(Y-X, is_prereq(X, Y), Edges),
+    vertices_edges_to_ugraph(Vertices, Edges, T).
