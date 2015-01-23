@@ -76,6 +76,8 @@ cn_d_1(P, description(Rest)) :- % class='course-descriptions'
     % does not parse anything at all, so the everything is left
     % in _Rest_
     phrase(course_descriptions(description(Rest)), Codes, Rest).
+    % The prerequisites will be left in the _Rest_ to be parsed.
+
 
 %% This is the second help predicate
 % The normalize_space argument is necessary to extract the text
@@ -95,27 +97,35 @@ list_to_pairs([A,B|Rest], [A-B|Pairs]) :-
 
 :- use_module(library(dcg/basics)).
 
-%% So far, we don't parse the descriptions at all; you will have to do
-% that on your own. You need at least the requirements extracted
-course_descriptions(description(_)) --> [].
+%% A helper DCG that would help us parse the description.
+% The Prerequisites must be parsed as well to extract the required
+% classes for this particular course.
+course_descriptions(description(Desc)) --> 
+    % Get the whole description before the word Prerequisites:
+    string_without(`Prerequisites:`, Desc_codes),
+    % Get the string with the prerequisites.
+    %string(Prereq_codes), `.`,   
+    {
+	atom_codes(Desc, Desc_codes)
+    }.
 
 %% This is how you can parse the "header" of each course: this is the
 % text contained in the <p class='course-name'>
 % Note that 'normalize_space' above took care of putting exactly one
 % space between "words", and removed any leading and trailing white space
-course_name(name(M, N, T, U)) -->
+course_name(course(N, T, U)) -->
     % nonblanks followed by a single white space is the "CSE"
-    nonblanks(M_codes), white,
-    % everything up to a dot, and the dot, and a white space is the number
-    string_without(`.`, N_codes), `.`, white,
+    % nonblanks(M_codes), white,
+    % everything up to a dot, and the dot, and a white space is the course
+    string_without(`.`, MN_codes), `.`, white,
     % Everything up to a space...
     string(T_codes), white,
     % ... followed by something enclosed in "(" and ")", and at the
     % very end of the whole list
     `(`, string(U_codes), `)`,
     % convert everything to atoms
-    {   atom_codes(M, M_codes),
-        atom_codes(N, N_codes),
+    {   
+        atom_codes(N, MN_codes),
         atom_codes(T, T_codes),
         atom_codes(U, U_codes)
     }.
