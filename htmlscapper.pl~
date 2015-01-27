@@ -63,7 +63,7 @@ list_to_pairs([A,B|Rest], [A-B|Pairs]) :-
 
 :- use_module(library(dcg/basics)).
 
-course_descriptions(description(_)) --> [].
+course_descriptions(description(_)) --> [`.`].
 
 course_name(name(M, N, T, U)) -->
     % nonblanks followed by a single white space is the "CSE"
