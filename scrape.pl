@@ -75,7 +75,7 @@ cn_d_1(P, description(Rest)) :- % class='course-descriptions'
     % argument, _Rest_. At the moment, course_descriptions//1
     % does not parse anything at all, so the everything is left
     % in _Rest_
-    phrase(course_descriptions(description(Rest)), Codes, Rest).
+    phrase(course_descriptions(Rest), Codes, Rest).
     % The prerequisites will be left in the _Rest_ to be parsed.
 
 
@@ -100,7 +100,7 @@ list_to_pairs([A,B|Rest], [A-B|Pairs]) :-
 %% A helper DCG that would help us parse the description.
 % The Prerequisites must be parsed as well to extract the required
 % classes for this particular course.
-course_descriptions(description(Desc)) --> 
+course_descriptions(description(Desc, Prereqs)) --> 
     % Get the whole description before the word Prerequisites:
     string_without(`Prerequisites:`, Desc_codes),
     % Get the string with the prerequisites.
@@ -113,11 +113,11 @@ course_descriptions(description(Desc)) -->
 % text contained in the <p class='course-name'>
 % Note that 'normalize_space' above took care of putting exactly one
 % space between "words", and removed any leading and trailing white space
-course_name(course(N, T, U)) -->
+course_name(course(M, N, T, U)) -->
     % nonblanks followed by a single white space is the "CSE"
-    % nonblanks(M_codes), white,
+     nonblanks(M_codes), white,
     % everything up to a dot, and the dot, and a white space is the course
-    string_without(`.`, MN_codes), `.`, white,
+    string_without(`.`, N_codes), `.`, white,
     % Everything up to a space...
     string(T_codes), white,
     % ... followed by something enclosed in "(" and ")", and at the
@@ -125,7 +125,8 @@ course_name(course(N, T, U)) -->
     `(`, string(U_codes), `)`,
     % convert everything to atoms
     {   
-        atom_codes(N, MN_codes),
+	atom_codes(M, M_codes),
+        atom_codes(N, N_codes),
         atom_codes(T, T_codes),
         atom_codes(U, U_codes)
     }.
