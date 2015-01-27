@@ -1,4 +1,4 @@
-:- module(scrape, [scrape/2, write_to_file/2]).
+:- module(scrape, [scrape/2, temp_subjects/2, write_to_file/2]).
 %% This is how you can load the file and call the predicate:
 %
 % ~~~~
@@ -7,9 +7,8 @@
 %
 % ?- module(scrape).
 % true.
-%
 % scrape:  ?- scrape('http://ucsd.edu/catalog/courses/CSE.html', Data).
-% Data = [name('CSE', '3', 'Fluency in Information Technology', '4')-description([73, 110, 116, 114, 111, 100|...]), name('CSE', '4GS', 'Mathematical Beauty in Rome', '4')-description([69, 120, 112, 108, 111|...]), name('CSE', '6GS', 'Mathematical Beauty in Rome Lab', '4')-description([67, 111, 109, 112|...]), name('CSE', '5A', 'Introduction to Programming I', '4')-description([40, 70, 111|...]), name('CSE', '7', 'Introduction to Programming with Matlab', '4')-description([70, 117|...]), name('CSE', '8A', 'Introduction to Computer Science: Java I', '4')-description([73|...]), name('CSE', '8B', 'Introduction to Computer Science: Java II', '4')-description([...|...]), name(..., ..., ..., ...)-description(...), ... - ...|...].
+% Data = [course('CSE', '3', 'Fluency in Information Technology', '4')-description([73, 110, 116, 114, 111, 100|...]), course('CSE', '4GS', 'Mathematical Beauty in Rome', '4')-description([69, 120, 112, 108, 111|...]), course('CSE', '6GS', 'Mathematical Beauty in Rome Lab', '4')-description([67, 111, 109, 112|...]), course('CSE', '5A', 'Introduction to Programming I', '4')-description([40, 70, 111|...]), course('CSE', '7', 'Introduction to Programming with Matlab', '4')-description([70, 117|...]), course('CSE', '8A', 'Introduction to Computer Science: Java I', '4')-description([73|...]), course('CSE', '8B', 'Introduction to Computer Science: Java II', '4')-description([...|...]), course(..., ..., ..., ...)-description(...), ... - ...|...].
 % ~~~~
 %
 % You should get the same thing pretty much
@@ -41,11 +40,22 @@ scrape(URL, Data) :-
     close(In),
     courses(DOM, Data).
 
+%% This is to get the subject codes. It will be redesigned,
+% so that it is not a standalone function.
+% 
+%
+temp_subjects(URL, Data) :-
+    http_open(URL, In, []),
+    load_html(In, DOM, [syntax_errors(quiet)]),
+    close(In),
+    subjects(DOM, Data).
+    
+
 %% Collect all relevant <p>'s in a list and make a list of pairs out of it
 courses(DOM, Courses) :-
     findall(CN_D, cn_d(DOM, CN_D), CNs_Ds),
     list_to_pairs(CNs_Ds, Courses).
-    
+
 %% cn_d/2 is a non-deterministic predicate; it will have many solutions
 % so you need to use findall/3 to evaluate it and collect them all in a
 % list
@@ -67,15 +77,15 @@ cn_d(DOM, CN_D) :-
 cn_d_1(P, Name) :- % selects class='course-name'
     cn_d_2(P, 'course-name', Codes),
     phrase(course_name(Name), Codes).
-cn_d_1(P, description(Rest)) :- % class='course-descriptions'
+cn_d_1(P, description(Desc)) :- % class='course-descriptions'
     cn_d_2(P, 'course-descriptions', Codes),
     dif(Codes, []),
-    % phrase/4: note the extra argument at the end, here _Rest_
+    % phrase/3: note the extra argument at the end, here _Rest_
     % whatever is not parsed by the DCG is left in the last
     % argument, _Rest_. At the moment, course_descriptions//1
     % does not parse anything at all, so the everything is left
     % in _Rest_
-    phrase(course_descriptions(Rest), Codes, Rest).
+    phrase(course_descriptions(description(Desc)), Codes, Rest).
     % The prerequisites will be left in the _Rest_ to be parsed.
 
 
@@ -86,6 +96,22 @@ cn_d_1(P, description(Rest)) :- % class='course-descriptions'
 cn_d_2(P, Class, Codes) :-
     xpath(P, /self(@class=Class, normalize_space), Text),
     atom_codes(Text, Codes).
+
+%% Collect all relevant <tr>s in a list.
+subjects(DOM, Subjects) :-
+    findall(Code_Desc, code_desc(DOM,Code_Desc), Codes_Descs).
+
+%% code_desc/2 is a non-deterministic predicate.
+% 
+% xpath will return all instances of <tr>, but there are 
+% 2 <td> tags in each one of them.
+%
+code_desc(DOM, Code_Desc) :-
+    xpath(DOM, //tr, TR), % select a <p>
+    once(code_desc_1(TR, Code_Desc)). % succeed only once!
+
+code_desc_1(TR, Code_Desc) :-
+    true.
 
 %% This takes a list in which pairs are just the pairs of two
 % consequitive elements and makes a list of proper "pairs" out of it;
@@ -100,9 +126,10 @@ list_to_pairs([A,B|Rest], [A-B|Pairs]) :-
 %% A helper DCG that would help us parse the description.
 % The Prerequisites must be parsed as well to extract the required
 % classes for this particular course.
-course_descriptions(description(Desc, Prereqs)) --> 
+course_descriptions(description(Desc)) -->
     % Get the whole description before the word Prerequisites:
-    string_without(`Prerequisites:`, Desc_codes),
+    string_without(":", Desc_codes),
+    %splitter("Prerequisites:", Desc_codes, Desc),
     % Get the string with the prerequisites.
     %string(Prereq_codes), `.`,   
     {
