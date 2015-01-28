@@ -10,7 +10,7 @@
 % Return a list of course_frontend
 % Courses = [course_frontend('CSE','3','it is a class','4'), , ,]
 data(Courses) :-
-    findall(course_frontend(M, N, T, U), course(M, N, T, U), Courses).
+    findall(course_frontend(M, N, D, U), course(M, N, D, U), Courses).
 
 
   
