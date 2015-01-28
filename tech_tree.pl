@@ -1,22 +1,21 @@
-% Sample TechTree
-% To be changed later
+% TechTree
 
-%:- module(tech_tree, []).
+:- use_module(library(ugraphs)).
 
-%:- use_module(library(lists)).
+course('CSE','3','HTML','4').
+course('CSE','11','JAVA','4').
+course('CSE','12','D structure', '4').
+course('CSE','30', 'C' , '4').
+course('CSE','20','MATH', '4').
+course('CSE','21','MATH++', '4').
+course('CSE','100','advanced D' , '4').
 
-% Simple data: my_course(Name, Pre-req)
-course('3',[]).
-course('11',[]).
-course('12',['11']).
-course('30',['12']).
-course('20',['11']).
-course('21',['20']).
-course('100',['30','21']).
+% three difference format
+prereqs('CSE','30', ['CSE 12', 'CSE 11'] ).
+prereqs('CSE','30', ['CSE', '12', 'CSE', '11'] ).
+prereqs('CSE 30', ['CSE 12', 'CSE 11'] ).
 
-course_taken('11').
-course_taken('12').
-
+course_taken('CSE', ['11' , '12']).
 
 
 course_list(L) :-
@@ -37,12 +36,9 @@ is_prereq(X, Y) :-
     course(Y, L),
     member(X, L).
 
-% todo 
-% able_to_take(X) :-
-
-:- use_module(library(ugraphs)).
-
 prereq_tree(T) :-
     course_list(Vertices),
     findall(Y-X, is_prereq(X, Y), Edges),
     vertices_edges_to_ugraph(Vertices, Edges, T).
+
+
