@@ -52,14 +52,12 @@ list_to_pairs([A,B|Rest], [A-B|Pairs]) :-
 
 :- use_module(library(dcg/basics)).
 
-course_name(course(M, N, T, U)) -->
-     nonblanks(M_codes), white,
-    string_without(`.`, N_codes), `.`, white,
+course_name(course(C, T, U)) -->
+    string_without(`.`, C_codes), `.`, white,
     string(T_codes), white,
     `(`, string(U_codes), `)`,
     {   
-	atom_codes(M, M_codes),
-        atom_codes(N, N_codes),
+        atom_codes(C, C_codes),
         atom_codes(T, T_codes),
         atom_codes(U, U_codes)
     }.
