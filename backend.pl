@@ -1,16 +1,17 @@
+:- module(backend,[courses/1]).
 % The purpose of backend.pl is to allow front-end to:
 % 1. Access the database. ex. get a list of courses
-% 2.  
-% 3.
 
-:- module(backend,[data/1]).
+:- use_module(db, [course_title/2, course_units/2]).
 
-:- use_module(db,[course/4]).
-
-% Return a list of course_frontend
-% Courses = [course_frontend('CSE','3','it is a class','4'), , ,]
-data(Courses) :-
-    findall(course_frontend(M, N, D, U), course(M, N, D, U), Courses).
+%% Return a list of courses
+% Courses = [course(ID, Title, [U1, ...]), course(...), ...]
+courses(Courses) :-
+    findall(course(ID, Title, Units),
+        (   course_title(ID, Title),
+            course_units(ID, Units)
+        ),
+        Courses).
 
 
   

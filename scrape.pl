@@ -13,10 +13,14 @@ main :-
 todb(Source, DB_file) :-
     scrape(Source, Courses),
     setup_call_cleanup(open(DB_file, write, Out),
-        (   course_name_todb(Courses, Out),
+        (   module_header_todb(Out),
+            course_name_todb(Courses, Out),
             course_units_todb(Courses, Out)
         ),
         close(Out)).
+
+module_header_todb(Out) :-
+    format(Out, ":- module(db, [course_title/2, course_units/2]).~n", []).
 
 course_name_todb(Courses, Out) :-
     forall(member(course(C, Title, _)-_, Courses),
