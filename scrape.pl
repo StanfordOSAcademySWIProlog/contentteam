@@ -1,16 +1,27 @@
 :- use_module(library(http/http_open)).
 :- use_module(library(xpath)).
 
-write_to_file(Courses, File) :-
-    setup_call_cleanup(open(File, write, Out),
-        forall(member(N-_, Courses), format(Out, "~q.~n", [N])),
+todb(Source, DB_file) :-
+    scrape(Source, Courses),
+    setup_call_cleanup(open(DB_file, write, Out),
+        (   course_name_todb(Courses, Out),
+            course_units_todb(Courses, Out)
+        ),
         close(Out)).
 
-scrape(file, File, Data) :-
+course_name_todb(Courses, Out) :-
+    forall(member(course(C, Title, _)-_, Courses),
+        format(Out, "course_title(~q, ~q).~n", [C, Title])).
+    
+course_units_todb(Courses, Out) :-
+    forall(member(course(C, _, Units)-_, Courses),
+        format(Out, "course_units(~q, ~q).~n", [C, Units])).
+
+scrape(file(File), Data) :-
     setup_call_cleanup(open(File, read, In, []),
         scrape_stream(In, Data),
         close(In)).
-scrape(url, URL, Data) :-
+scrape(url(URL), Data) :-
     setup_call_cleanup(http_open(URL, In, []),
         scrape_stream(In, Data),
         close(In)).
@@ -56,8 +67,7 @@ course_name(course(C, T, U)) -->
     string_without(`.`, C_codes), `.`, white,
     string(T_codes), white,
     `(`, string(U_codes), `)`,
-    {   
-        atom_codes(C, C_codes),
+    {   atom_codes(C, C_codes),
         atom_codes(T, T_codes),
         atom_codes(U, U_codes)
     }.
