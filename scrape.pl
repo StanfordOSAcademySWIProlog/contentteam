@@ -15,7 +15,12 @@ todb(Source, DB_file) :-
         close(Out)).
 
 module_header_todb(Out) :-
-    format(Out, ":- module(db, [course_title/2, course_units/2]).~n", []).
+    Exported = ["course_title/2",
+                "course_units/2",
+                "course_descr/2",
+                "course_reqs/2"],
+    atomics_to_string(Exported, ",", Exported_str),
+    format(Out, ":- module(db, [~s]).~n", [Exported_str]).
 
 course_name_todb(Courses, Out) :-
     forall(member(course(C,Title,_)-_, Courses),
@@ -27,7 +32,7 @@ course_units_todb(Courses, Out) :-
 
 course_descrtext_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(Desc,_), Courses),
-        format(Out, "course_description(~q, ~q).~n", [C, Desc])).
+        format(Out, "course_descr(~q, ~q).~n", [C, Desc])).
 
 course_reqs_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(_,Reqs), Courses),
