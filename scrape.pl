@@ -28,7 +28,11 @@ course_name_todb(Courses, Out) :-
     
 course_units_todb(Courses, Out) :-
     forall(member(course(C,_,Units)-_, Courses),
-        format(Out, "course_units(~q, ~q).~n", [C, Units])).
+        normalized_course_units_todb(C, Units, Out)).
+
+normalized_course_units_todb(C, Units, Out) :-
+    forall(member(U, Units),
+        format(Out, "course_units(~q, ~q).~n", [C, U])).
 
 course_descrtext_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(Desc,_), Courses),
@@ -94,11 +98,37 @@ cds_to_pairs_1([description(D,R)|Rest], course(C,T,U),
 course_name(course(C, T, U)) -->
     string_without(`.`, C_codes), `.`, white,
     string(T_codes), white,
-    `(`, string(U_codes), `)`,
+    `(`, units(U), `)`,
     {   atom_codes(C, C_codes),
-        atom_codes(T, T_codes),
-        atom_codes(U, U_codes)
+        atom_codes(T, T_codes)
     }.
+
+:- use_module(library(lists)).
+
+% Because there are a few different ways units are written down
+units([Unit]) -->
+    integer(Unit).
+units(Units) -->
+    integer(From),
+    [0'–],
+    integer(To),
+    {   numlist(From, To, Units)
+    }.
+units([U1,U2]) -->
+    integer(U1), white,
+    `or`, white,
+    integer(U2).
+units([U|Us]) -->
+    integer(U),
+    `,`, white,
+    more_units(Us).
+more_units([U|Us]) -->
+    integer(U),
+    `,`, white,
+    more_units(Us).
+more_units([Last]) -->
+    `or`, white,
+    integer(Last).
 
 course_descriptions(description(Desc, Reqs)) -->
     string(Desc_codes),
