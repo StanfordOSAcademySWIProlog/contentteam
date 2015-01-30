@@ -6,11 +6,17 @@ write_to_file(Courses, File) :-
         forall(member(N-_, Courses), format(Out, "~q.~n", [N])),
         close(Out)).
 
-%% Give it the URL of the CSE courses (see the example at the top),
-scrape(URL, Data) :-
-    http_open(URL, In, []),
+scrape(file, File, Data) :-
+    setup_call_cleanup(open(File, read, In, []),
+        scrape_stream(In, Data),
+        close(In)).
+scrape(url, URL, Data) :-
+    setup_call_cleanup(http_open(URL, In, []),
+        scrape_stream(In, Data),
+        close(In)).
+
+scrape_stream(In, Data) :-
     load_html(In, DOM, [syntax_errors(quiet)]),
-    close(In),
     courses(DOM, Data).
 
 %% Collect all relevant <p>'s in a list and make a list of pairs out of it
