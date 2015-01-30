@@ -12,11 +12,12 @@
 % Courses = [course(ID, Title, Units, Descr, Reqs), course(...), ...]
 courses(Courses) :-
     findall(course(ID, Title, Units, Descr, Reqs),
-        (   course_title(ID, Title),
-            course_units(ID, Units),
-            course_descr(ID, Descr),
-            course_reqs(ID, Reqs)
-        ),
+        course(ID, Title, Units, Descr, Reqs),
         Courses).
 
+course(ID, Title, Units, Descr, Reqs) :-
+    course_title(ID, Title),
+    course_units(ID, Units),
+    course_descr(ID, Descr),
+    course_reqs(ID, Reqs).
 

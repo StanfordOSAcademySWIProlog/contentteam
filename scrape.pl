@@ -15,11 +15,11 @@ todb(Source, DB_file) :-
         close(Out)).
 
 module_header_todb(Out) :-
-    Exported = ["course_title/2",
-                "course_units/2",
-                "course_descr/2",
-                "course_reqs/2"],
-    atomics_to_string(Exported, ",", Exported_str),
+    atomics_to_string(["course_title/2",
+                       "course_units/2",
+                       "course_descr/2",
+                       "course_reqs/2"],
+        ",", Exported_str),
     format(Out, ":- module(db, [~s]).~n", [Exported_str]).
 
 course_name_todb(Courses, Out) :-
@@ -28,15 +28,11 @@ course_name_todb(Courses, Out) :-
     
 course_units_todb(Courses, Out) :-
     forall(member(course(C,_,Units)-_, Courses),
-        normalized_course_units_todb(C, Units, Out)).
-
-normalized_course_units_todb(C, Units, Out) :-
-    forall(member(U, Units),
-        format(Out, "course_units(~q, ~q).~n", [C, U])).
+        format(Out, "course_units(~q, ~q).~n", [C, Units])).
 
 course_descrtext_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(Desc,_), Courses),
-        format(Out, "course_descr(~q, ~q).~n", [C, Desc])).
+        format(Out, "course_descr(~q, \"~s\").~n", [C, Desc])).
 
 course_reqs_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(_,Reqs), Courses),
@@ -106,22 +102,21 @@ course_name(course(C, T, U)) -->
 :- use_module(library(lists)).
 
 % Because there are a few different ways units are written down
-units([Unit]) -->
+units(exactly(Unit)) -->
     integer(Unit).
-units(Units) -->
+units(from_to(From, To)) -->
     integer(From),
     [0'–],
-    integer(To),
-    {   numlist(From, To, Units)
-    }.
-units([U1,U2]) -->
+    integer(To).
+units(one_of([U1,U2])) -->
     integer(U1), white,
     `or`, white,
     integer(U2).
-units([U|Us]) -->
+units(one_of([U|Us])) -->
     integer(U),
     `,`, white,
     more_units(Us).
+
 more_units([U|Us]) -->
     integer(U),
     `,`, white,
@@ -130,12 +125,16 @@ more_units([Last]) -->
     `or`, white,
     integer(Last).
 
-course_descriptions(description(Desc, Reqs)) -->
-    string(Desc_codes),
-    `Prerequisites: `, !,
+course_descriptions(description(Descr_codes, Reqs)) -->
+    string(Descr_codes), white,
+    `Prerequisites:`, !, white,
+    reqs(Reqs).
+course_descriptions(description(Descr, none)) -->
+    string(Descr).
+
+reqs(none) -->
+    `none.`, !.
+reqs(Reqs) -->
     string(Reqs_codes),
-    {   atom_codes(Desc, Desc_codes),
-        atom_codes(Reqs, Reqs_codes)
+    {  atom_codes(Reqs, Reqs_codes)
     }.
-course_descriptions(description(Desc, none)) -->
-    string(Desc).
