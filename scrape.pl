@@ -1,13 +1,10 @@
-:- module(scrape, [scrape/2, temp_subjects/2, write_to_file/2]).
 %% This is how you can load the file and call the predicate:
 %
 % ~~~~
 % ?- [scrape].
 % true.
 %
-% ?- module(scrape).
-% true.
-% scrape:  ?- scrape('http://ucsd.edu/catalog/courses/CSE.html', Data).
+% ?- scrape('http://ucsd.edu/catalog/courses/CSE.html', Data).
 % Data = [course('CSE', '3', 'Fluency in Information Technology', '4')-description([73, 110, 116, 114, 111, 100|...]), course('CSE', '4GS', 'Mathematical Beauty in Rome', '4')-description([69, 120, 112, 108, 111|...]), course('CSE', '6GS', 'Mathematical Beauty in Rome Lab', '4')-description([67, 111, 109, 112|...]), course('CSE', '5A', 'Introduction to Programming I', '4')-description([40, 70, 111|...]), course('CSE', '7', 'Introduction to Programming with Matlab', '4')-description([70, 117|...]), course('CSE', '8A', 'Introduction to Computer Science: Java I', '4')-description([73|...]), course('CSE', '8B', 'Introduction to Computer Science: Java II', '4')-description([...|...]), course(..., ..., ..., ...)-description(...), ... - ...|...].
 % ~~~~
 %
