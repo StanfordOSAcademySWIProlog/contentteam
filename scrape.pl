@@ -1,3 +1,12 @@
+:- set_prolog_flag(verbose, silent).
+:- initialization(main).
+
+main :-
+    todb(file('ucsd-cse-courses.html'), 'db.pl'),
+    halt.
+main :-
+    halt(1).
+
 :- use_module(library(http/http_open)).
 :- use_module(library(xpath)).
 
