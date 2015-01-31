@@ -1,4 +1,5 @@
 :- module(backend,[courses/1]).
+:- license(lgpl).
 % The purpose of backend.pl is to allow front-end to:
 % 1. Access the database. ex. get a list of courses
 

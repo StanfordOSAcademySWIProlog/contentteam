@@ -1,3 +1,4 @@
+:- license(lgpl).
 :- set_prolog_flag(verbose, silent).
 :- initialization(main).
 

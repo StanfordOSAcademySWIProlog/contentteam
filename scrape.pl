@@ -1,4 +1,5 @@
 :- module(scrape, [todb/2]).
+:- license(lgpl).
 
 :- use_module(library(http/http_open)).
 :- use_module(library(xpath)).
