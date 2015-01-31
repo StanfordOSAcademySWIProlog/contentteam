@@ -15,28 +15,28 @@ todb(Source, DB_file) :-
         close(Out)).
 
 module_header_todb(Out) :-
-    atomics_to_string(["course_title/2",
-                       "course_units/2",
-                       "course_descr/2",
-                       "course_reqs/2"],
+    atomics_to_string(["t_course_title/2",
+                       "t_course_units/2",
+                       "t_course_descr/2",
+                       "t_course_reqs/2"],
         ",", Exported_str),
     format(Out, ":- module(db, [~s]).~n", [Exported_str]).
 
 course_name_todb(Courses, Out) :-
     forall(member(course(C,Title,_)-_, Courses),
-        format(Out, "course_title(~q, ~q).~n", [C, Title])).
+        format(Out, "t_course_title(~q, ~q).~n", [C, Title])).
     
 course_units_todb(Courses, Out) :-
     forall(member(course(C,_,Units)-_, Courses),
-        format(Out, "course_units(~q, ~q).~n", [C, Units])).
+        format(Out, "t_course_units(~q, ~q).~n", [C, Units])).
 
 course_descrtext_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(Desc,_), Courses),
-        format(Out, "course_descr(~q, \"~s\").~n", [C, Desc])).
+        format(Out, "t_course_descr(~q, \"~s\").~n", [C, Desc])).
 
 course_reqs_todb(Courses, Out) :-
     forall(member(course(C,_,_)-description(_,Reqs), Courses),
-        format(Out, "course_reqs(~q, ~q).~n", [C, Reqs])).
+        format(Out, "t_course_reqs(~q, ~q).~n", [C, Reqs])).
 
 scrape(file(File), Data) :-
     setup_call_cleanup(open(File, read, In, []),
