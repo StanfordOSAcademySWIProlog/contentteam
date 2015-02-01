@@ -6,38 +6,14 @@
 
 todb(Source, DB_file) :-
     scrape(Source, Courses),
+    Write_term_opts = [fullstop, nl(true), quoted(true)],
     setup_call_cleanup(open(DB_file, write, Out),
-        (   module_header_todb(Out),
-            course_name_todb(Courses, Out),
-            course_units_todb(Courses, Out),
-            course_descrtext_todb(Courses, Out),
-            course_reqs_todb(Courses, Out)
+        (   format(Out, ":- ", []),
+            write_term(Out, module(db, [course/5]), Write_term_opts),
+            forall(member(C, Courses),
+                write_term(Out, C, Write_term_opts))
         ),
         close(Out)).
-
-module_header_todb(Out) :-
-    atomics_to_string(["t_course_title/2",
-                       "t_course_units/2",
-                       "t_course_descr/2",
-                       "t_course_reqs/2"],
-        ",", Exported_str),
-    format(Out, ":- module(db, [~s]).~n", [Exported_str]).
-
-course_name_todb(Courses, Out) :-
-    forall(member(course(C,Title,_)-_, Courses),
-        format(Out, "t_course_title(~q, ~q).~n", [C, Title])).
-    
-course_units_todb(Courses, Out) :-
-    forall(member(course(C,_,Units)-_, Courses),
-        format(Out, "t_course_units(~q, ~q).~n", [C, Units])).
-
-course_descrtext_todb(Courses, Out) :-
-    forall(member(course(C,_,_)-description(Desc,_), Courses),
-        format(Out, "t_course_descr(~q, \"~s\").~n", [C, Desc])).
-
-course_reqs_todb(Courses, Out) :-
-    forall(member(course(C,_,_)-description(_,Reqs), Courses),
-        format(Out, "t_course_reqs(~q, ~q).~n", [C, Reqs])).
 
 scrape(file(File), Data) :-
     setup_call_cleanup(open(File, read, In, []),
@@ -55,7 +31,7 @@ scrape_stream(In, Data) :-
 %% Collect all relevant <p>'s in a list and make a list of pairs out of it
 courses(DOM, Courses) :-
     findall(CN_D, cn_d(DOM, CN_D), CNs_Ds),
-    cds_to_pairs(CNs_Ds, Courses).
+    cds_to_terms(CNs_Ds, Courses).
 
 %% cn_d/2 is a non-deterministic predicate; it will have many solutions
 % so you need to use findall/3 to evaluate it and collect them all in a
@@ -67,10 +43,10 @@ cn_d(DOM, CN_D) :-
 cn_d_1(P, Name) :-
     cn_d_2(P, 'course-name', Codes),
     phrase(course_name(Name), Codes).
-cn_d_1(P, description(Text, Reqs)) :-
+cn_d_1(P, description(Descr_str, Reqs)) :-
     cn_d_2(P, 'course-descriptions', Codes),
-    phrase(course_descriptions(description(Text, Reqs)), Codes).
-    % The prerequisites will be left in the _Rest_ to be parsed.
+    phrase(course_descriptions(description(Descr, Reqs)), Codes),
+    string_codes(Descr_str, Descr).
 
 % The normalize_space argument is necessary to extract the text
 % from the DOM.
@@ -78,17 +54,17 @@ cn_d_2(P, Class, Codes) :-
     xpath(P, /self(@class=Class, normalize_space), Text),
     atom_codes(Text, Codes).
 
-cds_to_pairs([], []).
-cds_to_pairs([course(C,T,U)|Rest], Pairs) :-
-    cds_to_pairs_1(Rest, course(C,T,U), Pairs),
+cds_to_terms([], []).
+cds_to_terms([course(C,T,U)|Rest], Pairs) :-
+    cds_to_terms_1(Rest, course(C,T,U), Pairs),
     !.
 % if a description comes after another description, ignore it.
 % yes, that happens at least once!
-cds_to_pairs([description(_,_)|Rest], Pairs) :-
-    cds_to_pairs(Rest, Pairs).
-cds_to_pairs_1([description(D,R)|Rest], course(C,T,U),
-               [course(C,T,U)-description(D,R)|Pairs]) :-
-    cds_to_pairs(Rest, Pairs).
+cds_to_terms([description(_,_)|Rest], Pairs) :-
+    cds_to_terms(Rest, Pairs).
+cds_to_terms_1([description(D,R)|Rest], course(C,T,U),
+               [course(C,T,U,D,R)|Pairs]) :-
+    cds_to_terms(Rest, Pairs).
 
 :- use_module(library(dcg/basics)).
 
