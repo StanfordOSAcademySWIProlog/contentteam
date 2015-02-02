@@ -17,7 +17,7 @@ be used to get a list of all courses. The result is a list with one
 element per course. Each element is a term `course/5`, with arguments:
 
 1. Course ID, an atom
-2. Course Title, an atom
+2. Course Title, an SWI7-style string
 3. Units, a term (see below)
 4. Text description, an SWI7-style string
 5. Prerequisites, an atom (for now)

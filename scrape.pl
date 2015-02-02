@@ -43,10 +43,9 @@ cn_d(DOM, CN_D) :-
 cn_d_1(P, Name) :-
     cn_d_2(P, 'course-name', Codes),
     phrase(course_name(Name), Codes).
-cn_d_1(P, description(Descr_str, Reqs)) :-
+cn_d_1(P, description(Descr, Reqs)) :-
     cn_d_2(P, 'course-descriptions', Codes),
-    phrase(course_descriptions(description(Descr, Reqs)), Codes),
-    string_codes(Descr_str, Descr).
+    phrase(course_descriptions(description(Descr, Reqs)), Codes).
 
 % The normalize_space argument is necessary to extract the text
 % from the DOM.
@@ -73,7 +72,7 @@ course_name(course(C, T, U)) -->
     string(T_codes), white,
     `(`, units(U), `)`,
     {   atom_codes(C, C_codes),
-        atom_codes(T, T_codes)
+        string_codes(T, T_codes)
     }.
 
 :- use_module(library(lists)).
@@ -102,12 +101,17 @@ more_units([Last]) -->
     `or`, white,
     integer(Last).
 
-course_descriptions(description(Descr_codes, Reqs)) -->
-    string(Descr_codes), white,
+course_descriptions(description(Descr, Reqs)) -->
+    string(Descr_codes),
+    prereqs(Reqs),
+    {   string_codes(Descr, Descr_codes)
+    }.
+
+prereqs(Reqs) -->
+    white,
     `Prerequisites:`, !, white,
     reqs(Reqs).
-course_descriptions(description(Descr, none)) -->
-    string(Descr).
+prereqs(none) --> [].
 
 reqs(none) -->
     `none.`, !.
