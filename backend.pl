@@ -5,6 +5,15 @@
 
 :- use_module(db, [course/5]).
 
+%cse12
+bool(or(val("CSE8B"), val("CSE11"))).
+%cse30
+bool(and(val("CSE12"),val("CSE15L"))).
+%cse100
+bool(and(and(and(or(val("CSE21"),val("MATH15B")),val("CSE12")),val("CSE15L")),or(or(or(val("CSE5A"),val("CSE30")),val("ECE15")),val("MAE9")))).
+%cse110
+bool(and(val("CSE12"),or(val("CSE21"),val("MATH15B")))).
+
 %% Return a list of courses
 % Courses = [course(ID, Title, Units, Descr, Reqs), course(...), ...]
 courses(Courses) :-
@@ -25,7 +34,7 @@ courses(Courses) :-
 %     or(val(a), and(val(b), val(c)))
 % - (a AND b AND (c OR d)) OR (f AND g):
 %     or(and(val(a), and(val(b), or(val(c), val(d)))), and(val(f), val(g)))
-% 
+%
 % ... and so on.
 %
 % Convert the boolean expresssions to lists,
@@ -40,3 +49,19 @@ bool_to_list(or(X, Y), L0, L1) :-
     (   bool_to_list(X, L0, L1)
     ;   bool_to_list(Y, L0, L1)
     ).
+
+test(X):-bool(B),bool_to_list(B,X,_Y).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
