@@ -31,9 +31,9 @@ Units are represented as one of three terms:
 The `course_ids/1` can be used to get a list of all course IDs.
 
 1. Course ID, an atom
-
+~~~~
     ['CSE 3', 'CSE 12', ....]. 
-
+~~~~
 
 The user should decide how to represent these for a human reader.
 
