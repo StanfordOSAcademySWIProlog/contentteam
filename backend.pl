@@ -3,7 +3,7 @@
 % The purpose of backend.pl is to allow front-end to:
 % 1. Access the database. ex. get a list of courses
 
-:- use_module(handcodeddb, [major/2,course/5,requirement/3]).
+:- use_module(handcodedDB, [major/2,course/5,requirement/3]).
 
 %% Return a list of courses
 % Courses = [course(ID, Title, Units, Descr, Reqs), course(...), ...]
@@ -41,22 +41,18 @@ bool_to_list(or(X, Y), L0, L1) :-
     ;   bool_to_list(Y, L0, L1)
     ).
 
-% remove rondom variable ex:["CSE12","CSE15L"|_G6013] at last element.
-list_fix(B,L):-
-    bool_to_list(B,X,_),
-    list_fix_helper(X,L).
-list_fix_helper([H|T],[H|L]):-string(H),nonvar(T),list_fix_helper(T,L).
-list_fix_helper([H|T],[H]):-var(T).
+
 
 %output all possible way of complete prerequirest as a list
 requirement_to_list(Dept,ID,X):-
 	requirement(Dept,ID,bool(B)),
-	list_fix(B,X).
+	bool_to_list(B,X,[]).
+
 
 %output require as a string format.
 requirement_to_string(Dept,ID,Result):-
 	requirement(Dept,ID,bool(B)),
-	list_fix(B,L),
+	bool_to_list(B,L,[]),
 	atomic_list_concat(L, '+', Atom),
 	atom_string(Atom,Str),
 	concat(Dept,ID,Y),
