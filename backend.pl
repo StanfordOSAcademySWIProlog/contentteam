@@ -3,16 +3,7 @@
 % The purpose of backend.pl is to allow front-end to:
 % 1. Access the database. ex. get a list of courses
 
-:- use_module(db, [course/5]).
-
-%cse12
-requirement("CSE","12",bool(or(val("CSE8B"),val("CSE11")))).
-%cse30
-requirement("CSE","30",bool(and(val("CSE12"),val("CSE15L")))).
-%cse100
-requirement("CSE","100",bool(and(and(and(or(val("CSE21"),val("MATH15B")),val("CSE12")),val("CSE15L")),or(or(or(val("CSE5A"),val("CSE30")),val("ECE15")),val("MAE9"))))).
-%cse110
-requirement("CSE","110",bool(and(val("CSE12"),or(val("CSE21"),val("MATH15B"))))).
+:- use_module(handcodeddb, [major/2,course/5,requirement/3]).
 
 %% Return a list of courses
 % Courses = [course(ID, Title, Units, Descr, Reqs), course(...), ...]
@@ -50,16 +41,19 @@ bool_to_list(or(X, Y), L0, L1) :-
     ;   bool_to_list(Y, L0, L1)
     ).
 
+% remove rondom variable ex:["CSE12","CSE15L"|_G6013] at last element.
 list_fix(B,L):-
     bool_to_list(B,X,_),
     list_fix_helper(X,L).
 list_fix_helper([H|T],[H|L]):-string(H),nonvar(T),list_fix_helper(T,L).
 list_fix_helper([H|T],[H]):-var(T).
 
+%output all possible way of complete prerequirest as a list
 requirement_to_list(Dept,ID,X):-
 	requirement(Dept,ID,bool(B)),
 	list_fix(B,X).
 
+%output require as a string format.
 requirement_to_string(Dept,ID,Result):-
 	requirement(Dept,ID,bool(B)),
 	list_fix(B,L),
