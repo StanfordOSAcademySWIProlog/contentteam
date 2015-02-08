@@ -12,15 +12,30 @@ $ swipl -s builddb.pl
 
 This creates a "database" file, `db.pl`, used by the backend.
 
-At the moment, the backend exposes two predicates, `courses/1` and `course_ids/1`. `courses/1` can
+####backend predicates:    
+`courses/1` and `course_ids/1`. `courses/1` can
 be used to get a list of all courses. The result is a list with one
-element per course. Each element is a term `course/5`, with arguments:
+element per course. Each element is a term `course/5`.    
+requirement_to_list/3: takes Dept and course ID and able to get all
+possible combination of prerequisites of that course.    
+requirement_to_string/3: same as above, output combination in string format.
 
-1. Course ID, an atom
-2. Course Title, an SWI7-style string
-3. Units, a term (see below)
-4. Text description, an SWI7-style string
-5. Prerequisites, an atom (for now)
+####Handcodeddb are coded with following data format, with arguments: 
+#####major/2   
+1. Department name code   
+2. Department full name     
+
+#####course/5    
+1. Course ID, an atom    
+2. Course Title, an SWI7-style string    
+3. Units, a term (see below)    
+4. Text description, an SWI7-style string   
+5. Prerequisites, an atom (for now)    
+
+#####requirement/3    
+1. Department/major name code    
+2. Course ID    
+3. boolean expression of prerequisites, Course ID are in string.    
 
 Units are represented as one of three terms:
 
@@ -36,4 +51,3 @@ The `course_ids/1` can be used to get a list of all course IDs.
 ~~~~
 
 The user should decide how to represent these for a human reader.
-
