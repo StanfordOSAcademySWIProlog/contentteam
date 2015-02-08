@@ -1,3 +1,5 @@
+:- module(handcodedDB, [major/2, course/5]).
+
 major("COGN","Communication/ General").
 major("COGR","Communication/ Graduate").
 major("COGS","Cognitive Science").
