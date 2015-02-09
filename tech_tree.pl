@@ -47,6 +47,13 @@ is_prereq(X, Y) :-
     member(X, L).
 
 
+prereq_tree_min(Dep, ID, T) :-
+    requirement_to_list(Dep, ID, L),
+
+
+
+
+
 % Tree contanis ALL courses
 prereq_tree(T) :-
     course_list(Vertices),
