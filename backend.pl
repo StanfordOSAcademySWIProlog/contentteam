@@ -1,4 +1,4 @@
-:- module(backend,[courses/1]).
+:- module(backend,[course_ids/1, courses/1]).
 :- license(lgpl).
 % The purpose of backend.pl is to allow front-end to:
 % 1. Access the database. ex. get a list of courses
@@ -10,7 +10,14 @@
 courses(Courses) :-
     findall(course(ID, Title, Units, Descr, Reqs),
         course(ID, Title, Units, Descr, Reqs),
-        Courses).
+        IDs).
+
+%% Return a list of course IDs
+% IDs = [ID1, ID2....] 
+course_ids(IDs) :-
+    findall(ID,
+        course(ID, Title, Units, Descr, Reqs),
+        IDs).
 
 % Represent prerequisites as a "boolean" expression
 % - An operand (value) is the term `val(Op)`
