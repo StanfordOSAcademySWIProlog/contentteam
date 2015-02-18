@@ -1,4 +1,4 @@
-:- module(get_all_links, [get_prereq_links/3]).
+:- module(get_all_links, [get_all_prereq_links/3, get_a_prereq_link/3]).
 :- license(lgpl).
 
 link_part_1("https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesPreReq.htm?termCode=").
@@ -14,13 +14,25 @@ link_part_2("&courseId=").
 % get_prereq_links/3 predicate will build and return a list of all
 % links that can be used to get the prerequisites from the 
 % UCSD schedule page.
-get_prereq_links(Qrt, CourseIds, AllLinks) :- 
+get_all_prereq_links(Qrt, CourseIds, AllLinks) :- 
+	link_concat(Qrt, Link),
+	get_prereq_links_1(Link, CourseIds, AllLinks).
+
+%% A predicate that allows you to get the prerequisites
+% link for a specific course.
+%
+% Qrt - expected to be a String indicating specific quarter.
+% CourseID - expected to be a string for a specific course.
+% Link - resultant link that gives prerequisites for this course.
+get_a_prereq_link(Qrt, CourseID, Link) :-
+	link_concat(Qrt, L),
+	get_prereq_links_1(L, [CourseID], Link).
+
+link_concat(Qrt, Link) :-
 	link_part_1(PartOne),
-	link_part_2(PartTwo),
-	string_concat(PartOne, Qrt, L),
-	string_concat(L, PartTwo, Link),
-	get_prereq_links_1(Link, CourseIds, AllLinks),
-	true.
+        link_part_2(PartTwo),
+        string_concat(PartOne, Qrt, L),
+        string_concat(L, PartTwo, Link).
 
 get_prereq_links_1(_, [], []).
 
