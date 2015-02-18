@@ -2,10 +2,10 @@
 :- set_prolog_flag(verbose, silent).
 :- initialization(main).
 
-:- use_module(scrape, [todb/2]).
+:- use_module(scrape, [builddb/2]).
 
 main :-
-    todb(file('ucsd-cse-courses.html'), 'db.pl'),
+    builddb([file('ucsd-cse-courses.html'), file('subject_codes.html')], 'db.pl'),
     halt.
 main :-
     halt(1).
