@@ -20,7 +20,6 @@ parse_a_class_prereqs(CourseID, Prereqs) :-
 % as atoms.
 % Prereqs is a list of lists of courseID and list of prerequisites.
 % i.e. [ [ 'CSE 12', [ ['CSE 11', 'or', 'CSE 8B'], [ 'CSE XXX']]], ..].
-
 parse_multi_class_prereqs(CourseIDs, Prereqs) :-
 	parse_list(CourseIDs, Prereqs).
 
