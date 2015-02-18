@@ -13,7 +13,7 @@ courses(Courses) :-
         IDs).
 
 %% Return a list of course IDs
-% IDs = [ID1, ID2....] 
+% IDs = [ID1, ID2....]
 course_ids(IDs) :-
     findall(ID,
         course(ID, Title, Units, Descr, Reqs),
@@ -49,19 +49,46 @@ bool_to_list(or(X, Y), L0, L1) :-
     ).
 
 
+% same as bool_to_list, but only work for requirment, for
+% val(id(Dept,#)) list.
+boolprereqs_to_list(none, Rest, Rest).
+boolprereqs_to_list(val(id(X,Y)), [C|Rest], Rest):-atomic_concat(X,Y,C).
+boolprereqs_to_list(and(X, Y), L0, L1) :-
+    boolprereqs_to_list(X, L0, L),
+    boolprereqs_to_list(Y, L, L1).
+boolprereqs_to_list(or(X, Y), L0, L1) :-
+    (   boolprereqs_to_list(X, L0, L1)
+    ;   boolprereqs_to_list(Y, L0, L1)
+    ).
+
+
+
 
 %output all possible way of complete prerequirest as a list
 requirement_to_list(Dept,ID,X):-
 	requirement(Dept,ID,bool(B)),
-	bool_to_list(B,X,[]).
+	boolprereqs_to_list(B,X,[]).
 
 
-%output require as a string format.
+%output requirement as a string format,
 requirement_to_string(Dept,ID,Result):-
 	requirement(Dept,ID,bool(B)),
-	bool_to_list(B,L,[]),
-	atomic_list_concat(L, '+', Atom),
-	atom_string(Atom,Str),
-	concat(Dept,ID,Y),
-	concat(Y,": ",X),
-	concat(X,Str,Result).
+	boolprereqs_to_list(B,L,[]),
+	atomic_list_concat(L, '+', Prep),
+	atom_concat(Dept,ID,Y),
+	atom_concat(Y,": ",X),
+	atom_concat(X,Prep,Atom),
+	atom_string(Atom,Result).
+
+
+
+
+
+
+
+
+
+
+
+
+
