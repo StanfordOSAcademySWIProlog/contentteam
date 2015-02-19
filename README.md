@@ -16,9 +16,9 @@ This creates a "database" file, `db.pl`, used by the backend.
 `courses/1` and `course_ids/1`. `courses/1` can
 be used to get a list of all courses. The result is a list with one
 element per course. Each element is a term `course/5`.    
-requirement_to_list/3: takes Dept and course ID and able to get all
-possible combination of prerequisites of that course.    
-requirement_to_string/3: same as above, output combination in string format.
+`requirement_to_list/3`: takes Dept and course ID (in atom) and able to get all
+possible combination of prerequisites of that course (an atom list).    
+`requirement_to_string/3`: same as above, output combination in string format.
 
 ####Handcodeddb are coded with following data format, with arguments: 
 #####major/2   
@@ -33,9 +33,9 @@ requirement_to_string/3: same as above, output combination in string format.
 5. Prerequisites, an atom (for now)    
 
 #####requirement/3    
-1. Department/major name code    
-2. Course ID    
-3. boolean expression of prerequisites, Course ID are in string.    
+1. Department/major name code (atom)    
+2. Course ID (atom)
+3. boolean expression of prerequisites, Course ID are in form of id('Dept','#').    
 
 Units are represented as one of three terms:
 
