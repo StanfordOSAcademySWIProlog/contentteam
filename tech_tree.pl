@@ -1,29 +1,11 @@
 % TechTree 
 
+:- module(tech_tree).
 :- use_module(library(ugraphs)).
-:- use_module(handcodedDB, [course/5]).
-:- use_module(bool_alg, [bool_to_list/3]).
 
-% receive from front-end
-course_taken('CSE 11').
-course_taken('CSE 12').
-course_goal('CSE 30').
-
-%Shane's Code
-
-%cse12
-requirement('CSE ','12',bool(or(val('CSE 8B'),val('CSE 11')))).
-%cse30
-requirement('CSE ', '30',bool(and(val('CSE 12'),val('CSE 15L')))).
-%cse100
-requirement('CSE ','100',bool(and(and(and(or(val('CSE 21'),val('MATH 15B')),val('CSE 12')),val('CSE 15L')),or(or(or(val('CSE 5A'),val('CSE 30')),val('ECE 15')),val('MAE 9'))))).
-%cse110
-requirement('CSE ', '110',bool(and(val('CSE 12'),or(val('CSE 21'),val('MATH 15B'))))).
-
-requirement_to_list(Dept,ID,X):-
-    requirement(Dept,ID,bool(B)),
-    bool_to_list(B,X,_Y).
-
+% for now
+:- use_module(handcodedDB, [major/2, course/5, requirement/3]).
+:- use_module(prereq_proc, [requirement_to_list/3, requirement_to_string/3]).
 
 
 course_list(L) :-
