@@ -35,4 +35,3 @@ fix_course_id(CourseID, ResultCourseID) :-
 	split_string(StringID, " ", "", [A,B|_]),
 	string_concat(A,B,ResultCourseID),	
 	true.	
-
