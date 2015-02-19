@@ -52,7 +52,9 @@ bool_to_list(or(X, Y), L0, L1) :-
 % same as bool_to_list, but only work for requirment, for
 % val(id(Dept,#)) list.
 boolprereqs_to_list(none, Rest, Rest).
-boolprereqs_to_list(val(id(X,Y)), [C|Rest], Rest):-atomic_concat(X,Y,C).
+boolprereqs_to_list(val(id(X,Y)), [C|Rest], Rest):-
+	atomic_concat(X,' ',Z),
+	atomic_concat(Z,Y,C).
 boolprereqs_to_list(and(X, Y), L0, L1) :-
     boolprereqs_to_list(X, L0, L),
     boolprereqs_to_list(Y, L, L1).
