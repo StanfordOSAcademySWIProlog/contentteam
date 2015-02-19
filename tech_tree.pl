@@ -1,37 +1,20 @@
 % TechTree 
 
+:- module(tech_tree, [prereq_tree/1]).
 :- use_module(library(ugraphs)).
 
-course('CSE','3','HTML','4').
-course('CSE','11','JAVA','4').
-course('CSE','12','D structure', '4').
-course('CSE','30', 'C' , '4').
-course('CSE','20','MATH', '4').
-course('CSE','21','MATH++', '4').
-course('CSE','100','advanced D' , '4').
+% for now
+:- use_module(handcodedDB, [major/2, course/5, requirement/3]).
+:- use_module(handcodedINPUT, [course_taken/1]).
+:- use_module(prereq_proc, [requirement_to_list/3, requirement_to_string/3]).
 
-% three difference format
-%prereqs('CSE','30', ['CSE 12', 'CSE 11'] ).
-
-prereqs('CSE','30', ['CSE', '12'] ).
-prereqs('CSE','12', ['CSE', '11'] ).
-prereqs('CSE','21', ['CSE', '20'] ).
-prereqs('CSE','100', ['CSE', '30', 'CSE' ,'21'] ).
-
-% prereqs('CSE 30', ['CSE 12', 'CSE 11'] ).
-
-% receive from front-end
-course_taken('CSE', '11').
-course_taken('CSE', '12').
-course_goal('CSE', '30').
-
-%-----------------------------------------------------
 
 course_list(L) :-
-    findall(X, course(_, X, _, _), L).
+    findall(X, course(X, _, _, _ ,_), L).
 
+% get from front-end
 course_taken_list(L) :-
-    findall(X, course_taken(_, X), L). 
+   findall(X, course_taken(X), L). 
 
 course_remain_list(L) :-
     course_list(X),
@@ -39,21 +22,18 @@ course_remain_list(L) :-
     subtract(X, Y, L). 
 
 % X is a pre-req of Y
+% use with caution, is_prereq(X, 'CSE 100') => X will contain duplicates
 is_prereq(X, Y) :-
-    course(_, X, _, _),
-    prereqs(_, Y, L),
+    dif(X, Y),
+    requirement_to_list(Dep,ID,L),
+    atom_concat(Dep, ' ', T),
+    atom_concat(T, ID, Y),
     member(X, L).
 
-% Tree contanis ALL courses
+% Tree contanis ALL courses in the db
 prereq_tree(T) :-
     course_list(Vertices),
     findall(Y-X, is_prereq(X, Y), Edges),
     vertices_edges_to_ugraph(Vertices, Edges, T).
-
-% simple order without course_taken
-order(L) :-
-    prereq_tree(G),
-    course_goal(_, J),
-    reachable(J, G, L).
 
     
