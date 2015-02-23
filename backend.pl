@@ -1,4 +1,4 @@
-:- module(backend,[course_ids/1, courses/1]).
+:- module(backend,[course_ids/1, courses/1, courses_taken/1]).
 :- license(lgpl).
 
 % The purpose of backend.pl is to allow front-end to:
@@ -21,3 +21,8 @@ course_ids(IDs) :-
     findall(ID,
         course(ID, _Title, _Units, _Descr, _Reqs),
         IDs).
+
+
+courses_taken(Taken) :-
+	debug(ucsd(backend), 'These courses were taken, over to you all ~q', [Taken]).
+
