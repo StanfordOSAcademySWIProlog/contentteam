@@ -12,11 +12,11 @@
 courses(Courses) :-
     findall(course(ID, Title, Units, Descr, Reqs),
         course(ID, Title, Units, Descr, Reqs),
-        IDs).
+        Courses).
 
 %% Return a list of course IDs
 % IDs = [ID1, ID2....]
 course_ids(IDs) :-
     findall(ID,
-        course(ID, Title, Units, Descr, Reqs),
+        course(ID, _Title, _Units, _Descr, _Reqs),
         IDs).
