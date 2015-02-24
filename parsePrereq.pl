@@ -45,18 +45,25 @@ parse_list([Course | T], [[Course | ListOfPrereqs]|ParsePrereqs]) :-
     parse_list(T, ParsePrereqs).
 
 prereqs(DOM, Prereqs) :-
-    findall(Prereq, prereqs_1(DOM, Prereq), [_|T]),
-    prereqs_2(T, Prereqs),
+    % Get all the tables.
+    findall(Prereq, xpath(DOM, //table, Prereq), [_|Ttable]),
+    % Ignore the first table, and extract all <tr>.
+    findall(Table, xpath(Ttable, //tr, Table), [_|Trows]),
+    findall(Rows, prereqs_tds(Trows, Rows), Prereqs),
     true.
 
-prereqs_1(DOM, Prereq) :-
-    xpath(DOM, //table, Prereq),
+prereqs_tds([], []).
+prereqs_tds([TR|Tail], Result) :-
+    findall(T, xpath(TR, //td, T), TD),
+    prereqs_tds(Tail, Spans),
+    [_|RelevantTD] = TD,
+    get_span(RelevantTD, RelSpans),
+    append(RelSpans, Spans, Result),
     true.
 
-prereqs_2(TBL, Prereq) :-
-    xpath(TBL, //tr, TRs),
-    prereqs_3(TRs, Prereq),
+get_span(ResultTDs, Spans) :-
+    xpath(ResultTDs, //span(normalize_space), Spans),
     true.
 
-prereqs_3(T, T).
+
 
