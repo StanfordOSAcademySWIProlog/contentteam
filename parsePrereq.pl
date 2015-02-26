@@ -11,8 +11,8 @@
 %%	Obtains all prerequisites for a specific course.
 % CourseID is expected to be a courseID.
 % Prereqs is [ ['CSE 11', 'or', 'CSE 8B'], ['CSE XXX']].
-parse_a_class_prereqs(CourseID, Prereqs) :-
-    once(get_a_prereq_link("WI14", CourseID, [URL|_])),
+parse_a_class_prereqs(CourseID, [CourseID|Prereqs]) :-
+    once(get_a_prereq_link("WI15", CourseID, [URL|_])),
     scrape(URL, Prereqs).
 
 %%	Obtains all prerequisites for a list of courses.
@@ -40,7 +40,7 @@ scrape_stream(In, Data) :-
     true.
 
 parse_list([],[]).
-parse_list([Course | T], [[Course | ListOfPrereqs]|ParsePrereqs]) :-
+parse_list([Course | T], [ListOfPrereqs|ParsePrereqs]) :-
     parse_a_class_prereqs(Course, ListOfPrereqs),
     parse_list(T, ParsePrereqs).
 
@@ -53,17 +53,10 @@ prereqs(DOM, Prereqs) :-
     true.
 
 prereqs_tds([], []).
-prereqs_tds([TR|Tail], Result) :-
+prereqs_tds([TR|Tail], [RelSpans|Spans]) :-
     findall(T, xpath(TR, //td, T), TD),
-    prereqs_tds(Tail, Spans),
     [_|RelevantTD] = TD,
-    get_span(RelevantTD, RelSpans),
-    append(RelSpans, Spans, Result),
-    true.
-
-get_span(ResultTDs, Spans) :-
-    xpath(ResultTDs, //span(normalize_space), Spans),
-    true.
-
+    findall(Span, xpath(RelevantTD, //span(normalize_space), Span), RelSpans),
+    prereqs_tds(Tail, Spans).
 
 
