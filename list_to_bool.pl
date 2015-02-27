@@ -8,14 +8,41 @@ sample('3',[['CSE 12'],['CSE 11','or','CSE 8B'],['CSE 15L']]).
 sample('4',[['CSE 12'],['CSE 11','or','CSE 8B','or','CSE 190'],['CSE 15L']]).
 
 
-%list_to_bool(L,bool(B)).
+list_to_bool(L,bool(B)).
 
 
 %convert list['1','2','3'] into and(and('3','2'),'1')
-%return empty atmo if list is empty
+%return empty atom if list is empty
 andlist_to_bool([],'').
 andlist_to_bool([H|[]],H):-!.
 andlist_to_bool([H|T],and(B,H)):-andlist_to_bool(T,B).
 
 %orlist([H|T],or(B,H)).
+
+
+atom_to_val(A,val(A)).
+
+
+%convert atom Course into id('Dept','#')
+%for example: C='CSE 12' -> ID= id('CSE','12)
+course_to_id(C,ID):-
+	atom_codes(C, Codes),
+	phrase(course_phraser(ID), Codes).
+
+% C='CSE 12' -> ID= val(id('CSE','12))
+course_to_val_id(C,val(ID)):-
+	course_to_id(C,ID).
+
+
+:- use_module(library(dcg/basics)).
+course_phraser(id(D,N)) -->
+	string(D_code),white,string(N_code),
+	{ atom_codes(D,D_code),
+	  atom_codes(N,N_code)
+	}.
+
+
+
+
+
 
