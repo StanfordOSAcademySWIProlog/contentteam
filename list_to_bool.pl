@@ -17,7 +17,18 @@ andlist_to_bool([],'').
 andlist_to_bool([H|[]],H):-!.
 andlist_to_bool([H|T],and(B,H)):-andlist_to_bool(T,B).
 
-%orlist([H|T],or(B,H)).
+%convert list ['1','or','2','or','3'] into or(or('3','2'),'1')
+%it return false if format does not match above.
+orlist_to_bool([],'').
+orlist_to_bool([H|[]],H):-
+	not(H='or'),!.
+orlist_to_bool([H|T],or(B,H)):-
+	not(H='or'),
+	orlist_to_bool2(T,B).
+orlist_to_bool2(['or'|[]],_):-!,false.
+orlist_to_bool2(['or'|T],B):-
+	orlist_to_bool(T,B).
+
 
 
 atom_to_val(A,val(A)).
