@@ -21,6 +21,9 @@ course_remain_list(L) :-
     course_taken_list(Y),
     subtract(X, Y, L). 
 
+req( L) :-
+  findall('CSE 110'-R, requirement_to_list('CSE', '110', R), L).
+  
 % X is a pre-req of Y
 % use with caution, is_prereq(X, 'CSE 100') => X will contain duplicates
 is_prereq(X, Y) :-

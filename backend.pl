@@ -25,4 +25,3 @@ course_ids(IDs) :-
 
 courses_taken(Taken) :-
 	debug(ucsd(backend), 'These courses were taken, over to you all ~q', [Taken]).
-
