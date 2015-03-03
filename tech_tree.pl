@@ -1,6 +1,6 @@
 % TechTree 
 
-:- module(tech_tree, [        ]).
+:- module(tech_tree, [prereq_tree/1]).
 :- use_module(library(ugraphs)).
 
 % for now
@@ -20,25 +20,14 @@ course_remain_list(L) :-
     course_taken_list(Y),
     subtract(X, Y, L). 
 
-
 % To generate course-[prereq(s)] 
 req(Course, L) :-
   findall(Course-Prereq, requirement_to_list(Course, Prereq), L).
-  
-% X is a pre-req of Y
-% use with caution, is_prereq(X, 'CSE 100') => X will contain duplicates
-
-/*
-is_prereq(X, Y) :-
-    requirement_to_list(C,L),
-    member(X, L),
-    diff(X,Y).
 
 % Tree contanis ALL courses in the db
-
 prereq_tree(T) :-
     course_list(Vertices),
-    findall(Y-X, is_prereq(X, Y), Edges),
+    req(_, Edges),
     vertices_edges_to_ugraph(Vertices, Edges, T).
   
-*/
+
