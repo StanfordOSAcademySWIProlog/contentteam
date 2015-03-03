@@ -1,4 +1,4 @@
-:- module(prereq_proc, [requirement_to_list/3, requirement_to_string/3]).
+:- module(prereq_proc, [requirement_to_list/2, requirement_to_string/3]).
 :- license(lgpl).
 
 :- use_module(handcodedDB, [major/2, course/5, requirement/3]).
@@ -51,8 +51,10 @@ boolprereqs_to_list(or(X, Y), L0, L1) :-
 
 %output all possible way of complete prerequirest as a list 
 
-requirement_to_list(Dept,ID,X):-
-    requirement(Dept,ID,bool(B)),
+requirement_to_list(Course,X):-
+    requirement(D, I ,bool(B)),
+    atom_concat(D, ' ', T),
+    atom_concat(T, I, Course),
     boolprereqs_to_list(B,X,[]).
 
 
