@@ -5,7 +5,9 @@
 
 % for now
 :- use_module(handcodedDB, [major/2, course/5, requirement/3]).
+
 :- use_module(handcodedINPUT, [course_taken/1]).
+
 :- use_module(prereq_proc, [requirement_to_list/2, requirement_to_string/3]).
 
 course_list(L) :-
@@ -29,5 +31,7 @@ prereq_tree(T) :-
     course_list(Vertices),
     req(_, Edges),
     vertices_edges_to_ugraph(Vertices, Edges, T).
-  
+
+    
+    
 
