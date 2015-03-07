@@ -6,8 +6,7 @@
 % 2. Receive information from users and store these in tables
 
 %%:- use_module(handcodedDB, [major/2,course/5,requirement/3]).
-:- use_module(db).
-:- use_module('lib/graphml/graphml_ugraph').
+%:- use_module(db).
 :- use_module(tech_tree, [prereq_tree/1]).
 
 %% Return a list of courses
@@ -38,21 +37,3 @@ term_file(T, F, Out) :-
                       term_stream(T,Out),
                       close(Out)).
 
-term_stream(Term, Out) :-
-    repeat,
-    write(Out, T),
-    (   T == end_of_file
-        -> !, fail
-        ; 
-        T = Term
-    ).
-
-g(1, [1-[3,5], 2-[4], 3-[], 4-[5], 5-[]]).
-
-t :-
-  g(1, Graph),
-  %  term_file(_ ,'output', Out),
-  graphml_write_ugraph( current_output, nomap, [], Graph).
-
-nomap(_, _, _) :-
-  assertion(fail).
