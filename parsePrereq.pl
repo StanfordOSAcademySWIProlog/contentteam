@@ -11,7 +11,7 @@
 %%	Obtains all prerequisites for a specific course.
 % CourseID is expected to be a courseID.
 %
-% Sample: 
+% Sample:
 %
 % Prereqs is [ ['CSE 11', 'or', 'CSE 8B'], ['CSE XXX']].
 parse_a_class_prereqs(CourseID, Qrt, [CourseID|Prereqs]) :-
@@ -23,7 +23,7 @@ parse_a_class_prereqs(CourseID, Qrt, [CourseID|Prereqs]) :-
 % as atoms.
 %
 % Sample usage:
-% 	course_ids(CourseIDs), parse_multi_class_prereqs(CourseIDs, Prereqs).
+%	course_ids(CourseIDs), parse_multi_class_prereqs(CourseIDs, Prereqs).
 %
 % Prereqs is a list of lists of courseID and list of prerequisites.
 % i.e. [ [ 'CSE 12', [ ['CSE 11', 'or', 'CSE 8B'], [ 'CSE XXX']]], ..].
@@ -63,7 +63,10 @@ prereqs_tds([], []).
 prereqs_tds([TR|Tail], [RelSpans|Spans]) :-
     findall(T, xpath(TR, //td, T), TD),
     [_|RelevantTD] = TD,
-    findall(Span, xpath(RelevantTD, //span(normalize_space), Span), RelSpans),
+    %order of OR list format not correct with findall,output: ['CSE 5A','CSE 30','ECE 15','MAE 9',or,or,or]
+    %temporarily remove all or in list assuming classID are in bold text
+    %findall(Span, xpath(RelevantTD, //span(normalize_space), Span), RelSpans),
+    findall(Span, xpath(RelevantTD, //span(@class='bold_text',normalize_space), Span), RelSpans),
     prereqs_tds(Tail, Spans).
 
 
