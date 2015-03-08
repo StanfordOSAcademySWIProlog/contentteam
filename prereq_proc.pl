@@ -1,8 +1,34 @@
 :- module(prereq_proc, [requirement_to_list/2, requirement_to_string/3]).
 :- license(lgpl).
 
+
 :- use_module(handcodedDB, [major/2, course/5, requirement/3]).
-% Present them as a boolean expression.         
+
+%output all possible way of complete prerequirest as a list
+%it can take either course as first input and loop up database by itself
+%or take a requirement and output it's possible combination
+%
+%example of usage:
+%?- requirement_to_list(requirement('CSE', '12', bool(or(val(id('CSE', '11')), val(id('CSE', '8B'))))),X).
+%X = ['CSE 11']
+%X = ['CSE 8B']
+%
+%?- requirement_to_list('CSE 12',X).
+%X = ['CSE 8B']
+%X = ['CSE 11']
+requirement_to_list(requirement(_,_,bool(B)),X):-
+    !,boolprereqs_to_list(B,X,[]).
+
+requirement_to_list(Course,X):-
+    !,requirement(D, I ,bool(B)),
+    atom_concat(D, ' ', T),
+    atom_concat(T, I, Course),
+    boolprereqs_to_list(B,X,[]).
+
+
+
+
+%Present them as a boolean expression.
 % - An operand (value) is the term `val(Op)`
 % - An AND is the term `and(X, Y)`
 % - An OR is the term `or(X, Y)`
@@ -35,7 +61,7 @@ bool_to_list(or(X, Y), L0, L1) :-
 
 % same as bool_to_list, but only work for requirment, for
 % val(id(Dept,#)) list.
-                          
+
 boolprereqs_to_list(none, Rest, Rest).
 boolprereqs_to_list(val(id(X,Y)), [C|Rest], Rest):-
     atomic_concat(X,' ',Z),
@@ -45,17 +71,10 @@ boolprereqs_to_list(and(X, Y), L0, L1) :-
     boolprereqs_to_list(Y, L, L1).
 boolprereqs_to_list(or(X, Y), L0, L1) :-
     (   boolprereqs_to_list(X, L0, L1)
-    ;   boolprereqs_to_list(Y, L0, L1)                                                    
+    ;   boolprereqs_to_list(Y, L0, L1)
     ).
 
 
-%output all possible way of complete prerequirest as a list 
-
-requirement_to_list(Course,X):-
-    requirement(D, I ,bool(B)),
-    atom_concat(D, ' ', T),
-    atom_concat(T, I, Course),
-    boolprereqs_to_list(B,X,[]).
 
 
 %output requirement as a string format,
