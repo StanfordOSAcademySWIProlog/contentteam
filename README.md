@@ -2,10 +2,14 @@
 
 ## Current Status
 There is a script that can scrape the CSE department of UCSD for courses,
-their names, number of unites, descriptions, and requirements. After
-scraping, a database is created. The scraping is implemented in the file
-`scrape.pl` and can be run as a script from the command line:
-
+their names, number of unites, descriptions, and requirements. get_all_link
+will create link for each course page depend on input Quarter and CourseID.
+parsePrereq will take that link and creat list of prerequirest for that course,
+and list_to_bool will convert that list to boolean expression.
+prereq_proc will process such expression and output all possible combination of 
+courses needed to take.
+builddb will build course database and build/2 will build requirement database
+based course database and input Quarter.
 ~~~~
 $ swipl -s builddb.pl
 ~~~~
@@ -13,6 +17,16 @@ $ swipl -s builddb.pl
 This creates a "database" file, `db.pl`, used by the backend.
 
 ####backend predicates:    
+===for front end use===   
+#####getPrereq:    
+`getprereq_fact/3`: take Course ID, quarter, and third arg will be requirement fact   
+`getprereq_list/3`: same as getprereq_fact, it third arg will be all combination of course needed to take  
+`build/2`: take Quarter and file name, then create requirment database   
+
+for detial explanation and usage, check each inside the file.
+
+
+======old predicates=====   
 `courses/1` and `course_ids/1`. `courses/1` can
 be used to get a list of all courses. The result is a list with one
 element per course. Each element is a term `course/5`.    
