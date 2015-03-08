@@ -1,4 +1,4 @@
-:- module(parse_prereqs, [parse_a_class_prereqs/3, parse_multi_class_prereqs/3]).
+:- module(parseprereq, [parse_a_class_prereqs/3, parse_multi_class_prereqs/3]).
 :- license(lgpl).
 
 :- use_module(get_all_links, [get_all_prereq_links/3, get_a_prereq_link/3]).
