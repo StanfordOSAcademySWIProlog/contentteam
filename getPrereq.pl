@@ -39,8 +39,9 @@ getprereq_list(CourseID,Qrt,Result):-
 build(Qrt,DB_file):-
     Write_term_opts = [fullstop, nl(true), quoted(true)],
     setup_call_cleanup(open(DB_file, write, Out),
-	(   atom_concat('%Database based on Quarter: ',Qrt, Msg),
-	    write_term(Out, Msg, Write_term_opts),
+	(
+	   %atom_concat('%Database based on Quarter: ',Qrt, Msg),
+	   %write_term(Out, Msg, Write_term_opts),
 	    write_term(Out,:- module(db, [requirement/3]), Write_term_opts),
 	    forall(all_courses(Qrt,Req),
 	    write_term(Out, Req, Write_term_opts))
