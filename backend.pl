@@ -1,4 +1,4 @@
-:- module(backend,[course_ids/1, courses/1, courses_taken/1, tech_tree/1]).
+:- module(backend,[course_ids/1, courses/1, courses_taken/2, tech_tree/1]).
 :- license(lgpl).
 
 % The purpose of backend.pl is to allow front-end to:
@@ -7,7 +7,7 @@
 
 %:- use_module(handcodedDB, [major/2,course/5,requirement/3]).
 :- use_module(db).
-:- use_module(tech_tree, [prereq_tree/1]).
+:- use_module(tech_tree).
 
 %% Return a list of courses
 % Courses = [course(ID, Title, Units, Descr, Reqs), course(...), ...]
@@ -24,8 +24,28 @@ course_ids(IDs) :-
         IDs).
 
 
-courses_taken(Taken) :-
+writing([], S) .
+
+writing([H|R], S) :-
+        write(S, 'course_taken('   ),
+        write(S, '\''),
+        write(S, H),
+        write(S, '\''),
+        write(S, ')'),
+        write(S, .),
+        nl(S),
+        writing(R, S).
+
+courses_taken(Taken, C) :-
+        open('../contentteam/input.pl', write, Stream),
+        write(Stream, ':- module(input, [course_taken/1])'),
+        write(Stream, .),
+        nl(Stream),
+        writing(Taken, Stream),
+        close(Stream),
+        get_next(C),        
 	debug(ucsd(backend), 'These courses were taken, over to you all ~q', [Taken]).
+
 
 % This gives the ugraph, in list of lists format
 tech_tree(T) :-

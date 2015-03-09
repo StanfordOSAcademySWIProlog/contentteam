@@ -1,4 +1,4 @@
-:-module(db,[requirement/3]).
+:-module(db2,[requirement/3]).
 requirement('CSE','4GS',bool(or(val(id('MATH','20A')),val(id('MATH','10A'))))).
 requirement('CSE','6GS',bool(or(val(id('MATH','20A')),val(id('MATH','10A'))))).
 requirement('CSE','8B',bool(val(id('CSE','8A')))).

@@ -2,7 +2,7 @@
 :- license(lgpl).
 
 
-:- use_module(handcodedDB, [major/2, course/5, requirement/3]).
+:- use_module(db2).
 
 %output all possible way of complete prerequirest as a list
 %it can take either course as first input and loop up database by itself
@@ -16,13 +16,13 @@
 %?- requirement_to_list('CSE 12',X).
 %X = ['CSE 8B']
 %X = ['CSE 11']
-requirement_to_list(requirement(_,_,bool(B)),X):-
+requirement_to_list(requirement(_,_,bool(B)),X, N):-
     !,boolprereqs_to_list(B,X,[]).
 
 requirement_to_list(Course,X):-
-    !,requirement(D, I ,bool(B)),
-    atom_concat(D, ' ', T),
-    atom_concat(T, I, Course),
+    !,requirement(D,I, bool(B)),
+        atom_concat(D, ' ', T),
+        atom_concat(T, I, Course),
     boolprereqs_to_list(B,X,[]).
 
 
